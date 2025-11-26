@@ -1,17 +1,37 @@
 package BeerTycoon;
 
-import BeerTycoon.BeerMakers.MakeBeer;
+import BeerTycoon.BeerMakers.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BeerTycoon {
+
+    final static Logger logger = LoggerFactory.getLogger(BeerTycoon.class);
 
     protected double beers = 0;
     JFrame frame;
     MakeBeer beerMaker;
+
+    JLabel beersLabel;
+
+    //Could inject this
+    public BeerMaker[] BUTTON_TEMPLATE = {new MakeBeer(), new BeerDude(), new LiquorStore(), new BeerSilo(), new BeerFactory(), new BeerOcean()};
+
+    List<BeerMaker> beerMakers = new ArrayList<>();
+    List<JButton> beerMakerButtons = new ArrayList<>();
+
+    List<JPanel> panels = new ArrayList<>();
 
     public BeerTycoon(String title) {
         beerMaker = new MakeBeer();
@@ -28,34 +48,26 @@ public class BeerTycoon {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(1,6));
 
-        JButton makeBeerButton = new JButton("Make Beer");
-        JButton dudeToGetYouBeer = new JButton("Dude to get you beer");
-        JButton liquorStore = new JButton("Liquor Store");
-        JButton button1 = new JButton("Test");
-        JButton button2 = new JButton("Test");
-        JButton button3 = new JButton("test4");
+        for (int i = 0; i < BUTTON_TEMPLATE.length;i++) {
+            JButton beerMakerButton = new JButton(BUTTON_TEMPLATE[i].getName());
+            buttonPanel.add(beerMakerButton);
+            beerMakerButtons.add(beerMakerButton);
+        }
 
         JPanel labelPanel = new JPanel();
-        JLabel beersLabel = new JLabel();
+        beersLabel = new JLabel();
 
         String formattedBeers = String.format("Total: %d beers", (int) beers);
         beersLabel.setText(formattedBeers);
 
         labelPanel.add(beersLabel);
 
-        buttonPanel.add(makeBeerButton);
-        buttonPanel.add(dudeToGetYouBeer);
-        buttonPanel.add(liquorStore);
-        buttonPanel.add(button1);
-        buttonPanel.add(button2);
-        buttonPanel.add(button3);
-
         frame.add(buttonPanel, BorderLayout.SOUTH);
         frame.add(labelPanel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
-        makeBeerButton.addActionListener(new ActionListener() {
+        beerMakerButtons.get(0).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 beers += beerMaker.makeBeer();
                 System.out.println("Beers: " + beers);
@@ -64,6 +76,40 @@ public class BeerTycoon {
                 beersLabel.setText(formattedBeers);
             }
         });
+
+        setupTimer();
+    }
+
+    private void setupTimer() {
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                refreshScreen();
+            }
+        }, 0, 1000);
+    }
+
+    //Where the logic will go of calculating beers, updating values, enabling/disabling buttons
+    private void refreshScreen() {
+        addBeer();
+
+        for (int i = 0;i < beerMakerButtons.size();i++) {
+            beerMakerButtons.get(i).setEnabled(beers >= BUTTON_TEMPLATE[i].getCost());
+        }
+
+        String formattedBeers = String.format("Total: %d beers", (int) beers);
+        logger.info(formattedBeers);
+        beersLabel.setText(formattedBeers);
+    }
+
+    private void addBeer() {
+        double calculatedBeers = 0;
+        for (BeerMaker beerMaker : beerMakers) {
+            calculatedBeers += beerMaker.makeBeer();
+        }
+
+        beers += calculatedBeers;
     }
 
     public static void main(String[] args) {
