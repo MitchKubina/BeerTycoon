@@ -22,6 +22,7 @@ public class BeerTycoon {
     protected double beers = 0;
     JFrame frame;
     MakeBeer beerMaker;
+    BeerMakerFactory beerMakerFactory = new BeerMakerFactory();
 
     JLabel beersLabel;
 
@@ -41,6 +42,7 @@ public class BeerTycoon {
 
     void setupScreen(String title)  {
         //Dependancy injection here?
+        //Needs to be smaller
         frame = new JFrame(title);
         frame.setSize(800,600);
         frame.setLayout(new BorderLayout());
@@ -66,6 +68,17 @@ public class BeerTycoon {
         frame.add(labelPanel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+
+        for (int i = 1;i < BUTTON_TEMPLATE.length;i++){
+            String beerMakerString = BUTTON_TEMPLATE[i].getName();
+
+            beerMakerButtons.get(i).addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    addBeerMaker(beerMakerString);
+                }
+            });
+        }
 
         beerMakerButtons.get(0).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -110,6 +123,15 @@ public class BeerTycoon {
         }
 
         beers += calculatedBeers;
+    }
+
+    private void addBeerMaker(String name) {
+        BeerMaker beerMaker = beerMakerFactory.getBeerMaker(name);
+
+        if (beerMaker.getCost() <= beers) {
+            beerMakers.add(beerMaker);
+            beers -= beerMaker.getCost();
+        }
     }
 
     public static void main(String[] args) {
