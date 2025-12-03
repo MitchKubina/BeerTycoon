@@ -22,6 +22,9 @@ public class BeerTycoonGUI {
     private List<BeerMaker> beerMakers;
     private BeerTycoon beerTycoon;
     private JPanel buttonPanel = new JPanel();
+    private JPanel messagePanel = new JPanel();
+    private JLabel messageLabel = new JLabel();
+    private JPanel middlePanel = new JPanel();
 
     public void setGame(BeerTycoon beerTycoon) {
         this.beerTycoon = beerTycoon;
@@ -79,8 +82,9 @@ public class BeerTycoonGUI {
         beersLabel.setText(formattedBeers);
     }
 
+    //sets us up to have some observers
     public void setMessage(String message) {
-
+        messageLabel.setText(message);
     }
 
     private BeerTycoonGUI() {}
@@ -94,7 +98,14 @@ public class BeerTycoonGUI {
 
     public void showScreen() {
         frame.add(buttonPanel, BorderLayout.SOUTH);
-        frame.add(labelPanel, BorderLayout.CENTER);
+
+        middlePanel.setLayout(new BoxLayout(middlePanel,BoxLayout.PAGE_AXIS));
+        messagePanel.add(messageLabel);
+        setMessage("hi there");
+
+        middlePanel.add(labelPanel);
+        middlePanel.add(messagePanel);
+        frame.add(middlePanel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
