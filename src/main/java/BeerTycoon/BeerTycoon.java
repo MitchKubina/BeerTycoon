@@ -6,11 +6,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-
 import java.util.Timer;
-import java.util.TimerTask;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +21,13 @@ public class BeerTycoon {
     JFrame frame;
     MakeBeer beerMaker;
     BeerMakerFactory beerMakerFactory = new BeerMakerFactory();
-
     JLabel beersLabel;
+    BeerTycoonGUI gui;
 
     //Could inject this
-    public BeerMaker[] BUTTON_TEMPLATE = {new MakeBeer(), new BeerDude(), new LiquorStore(), new BeerSilo(), new BeerFactory(), new BeerOcean()};
+    //ALso should probably be in string format and we use factories
+    //public BeerMaker[] BUTTON_TEMPLATE = {new MakeBeer(), new BeerDude(), new LiquorStore(), new BeerSilo(), new BeerFactory(), new BeerOcean()};
+    public List<BeerMaker> BUTTON_TEMPLATE = Arrays.asList(new MakeBeer(), new BeerDude(), new LiquorStore(), new BeerSilo(), new BeerFactory(), new BeerOcean());
 
     List<BeerMaker> beerMakers = new ArrayList<>();
     List<JButton> beerMakerButtons = new ArrayList<>();
@@ -37,60 +37,15 @@ public class BeerTycoon {
     public BeerTycoon(String title) {
         beerMaker = new MakeBeer();
 
-        setupScreen(title);
+        setupScreen();
+        setupTimer();
     }
 
-    void setupScreen(String title)  {
-        //Dependancy injection here?
-        //Needs to be smaller
-        frame = new JFrame(title);
-        frame.setSize(800,600);
-        frame.setLayout(new BorderLayout());
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1,6));
-
-        for (int i = 0; i < BUTTON_TEMPLATE.length;i++) {
-            JButton beerMakerButton = new JButton(BUTTON_TEMPLATE[i].getName());
-            buttonPanel.add(beerMakerButton);
-            beerMakerButtons.add(beerMakerButton);
-        }
-
-        JPanel labelPanel = new JPanel();
-        beersLabel = new JLabel();
-
-        String formattedBeers = String.format("Total: %d beers", (int) beers);
-        beersLabel.setText(formattedBeers);
-
-        labelPanel.add(beersLabel);
-
-        frame.add(buttonPanel, BorderLayout.SOUTH);
-        frame.add(labelPanel, BorderLayout.CENTER);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-
-        for (int i = 1;i < BUTTON_TEMPLATE.length;i++){
-            String beerMakerString = BUTTON_TEMPLATE[i].getName();
-
-            beerMakerButtons.get(i).addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    addBeerMaker(beerMakerString);
-                }
-            });
-        }
-
-        beerMakerButtons.get(0).addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                beers += beerMaker.makeBeer();
-                System.out.println("Beers: " + beers);
-
-                String formattedBeers = String.format("Total: %d beers", (int) beers);
-                beersLabel.setText(formattedBeers);
-            }
-        });
-
-        setupTimer();
+    void setupScreen()  {
+       gui = BeerTycoonGUI.getInstance();
+       gui.setGame(this);
+       gui.setButtons(BUTTON_TEMPLATE);
+       gui.showScreen();
     }
 
     private void setupTimer() {
@@ -107,13 +62,10 @@ public class BeerTycoon {
     private void refreshScreen() {
         addBeer();
 
-        for (int i = 0;i < beerMakerButtons.size();i++) {
-            beerMakerButtons.get(i).setEnabled(beers >= BUTTON_TEMPLATE[i].getCost());
-        }
-
         String formattedBeers = String.format("Total: %d beers", (int) beers);
         logger.info(formattedBeers);
-        beersLabel.setText(formattedBeers);
+
+        gui.setBeers(beers);
     }
 
     private void addBeer() {
@@ -125,17 +77,22 @@ public class BeerTycoon {
         beers += calculatedBeers;
     }
 
-    private void addBeerMaker(String name) {
+    void addBeerMaker(String name) {
         BeerMaker beerMaker = beerMakerFactory.getBeerMaker(name);
 
         if (beerMaker.getCost() <= beers) {
             beerMakers.add(beerMaker);
             beers -= beerMaker.getCost();
+            gui.setBeers(beers);
         }
     }
 
+    void addBeers(double beersToAdd) {
+        this.beers += beersToAdd;
+    }
+
     public static void main(String[] args) {
-        BeerTycoon game = new BeerTycoon("poop");
+        BeerTycoon game = new BeerTycoon("This does nothing right now");
     }
 
 }
