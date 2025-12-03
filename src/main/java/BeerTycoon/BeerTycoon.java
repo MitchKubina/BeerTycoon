@@ -18,33 +18,33 @@ public class BeerTycoon {
     final static Logger logger = LoggerFactory.getLogger(BeerTycoon.class);
 
     protected double beers = 0;
-    JFrame frame;
-    MakeBeer beerMaker;
-    BeerMakerFactory beerMakerFactory = new BeerMakerFactory();
-    JLabel beersLabel;
+    BeerMakerFactory beerMakerFactory;
     BeerTycoonGUI gui;
 
-    //Could inject this
-    //ALso should probably be in string format and we use factories
-    //public BeerMaker[] BUTTON_TEMPLATE = {new MakeBeer(), new BeerDude(), new LiquorStore(), new BeerSilo(), new BeerFactory(), new BeerOcean()};
-    public List<BeerMaker> BUTTON_TEMPLATE = Arrays.asList(new MakeBeer(), new BeerDude(), new LiquorStore(), new BeerSilo(), new BeerFactory(), new BeerOcean());
-
     List<BeerMaker> beerMakers = new ArrayList<>();
-    List<JButton> beerMakerButtons = new ArrayList<>();
+    List<BeerMaker> buttonList = new ArrayList<>();
 
-    List<JPanel> panels = new ArrayList<>();
-
-    public BeerTycoon(String title) {
-        beerMaker = new MakeBeer();
+    public BeerTycoon(BeerMakerFactory factory, List<String> buttons) {
+        this.beerMakerFactory = factory;
+        generateBeerMakers(buttons);
 
         setupScreen();
         setupTimer();
     }
 
+    private void generateBeerMakers(List<String> buttons) {
+        for (String beerMakerName : buttons) {
+            BeerMaker beerMaker = beerMakerFactory.getBeerMaker(beerMakerName);
+            buttonList.add(beerMaker);
+
+            //beerMakers.add(beerMaker);
+        }
+    }
+
     void setupScreen()  {
        gui = BeerTycoonGUI.getInstance();
        gui.setGame(this);
-       gui.setButtons(BUTTON_TEMPLATE);
+       gui.setButtons(buttonList);
        gui.showScreen();
     }
 
@@ -92,7 +92,10 @@ public class BeerTycoon {
     }
 
     public static void main(String[] args) {
-        BeerTycoon game = new BeerTycoon("This does nothing right now");
+        BeerMakerFactory factory = new BeerMakerFactory();
+        List<String> BUTTON_TEMPLATE = Arrays.asList("Make Beer", "Beer Dude", "Liquor Store", "Beer Silo", "Beer Factory", "Beer Ocean");
+
+        BeerTycoon game = new BeerTycoon(factory,BUTTON_TEMPLATE);
     }
 
 }
