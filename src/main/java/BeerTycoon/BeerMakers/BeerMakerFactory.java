@@ -3,14 +3,14 @@ package BeerTycoon.BeerMakers;
 public class BeerMakerFactory {
     public BeerMakerFactory() {}
 
-    public BeerMaker getBeerMaker(String name) {
-        return switch (name) {
-            case "Make Beer" -> new MakeBeer();
-            case "Beer Dude" -> new BeerDude();
-            case "Liquor Store" -> new LiquorStore();
-            case "Beer Silo" -> new BeerSilo();
-            case "Beer Factory" -> new BeerFactory();
-            case "Beer Ocean" -> new BeerOcean();
+    public BeerMaker getBeerMaker(BeerMakerType type) {
+        return switch (type) {
+            case BeerMakerType.MakeBeer -> new MakeBeer();
+            case BeerMakerType.BeerDude -> new BeerDude();
+            case BeerMakerType.LiquorStore -> new LiquorStore();
+            case BeerMakerType.BeerSilo -> new BeerSilo();
+            case BeerMakerType.BeerFactory -> new BeerFactory();
+            case BeerMakerType.BeerOcean -> new BeerOcean();
             default -> new MakeBeer();
         };
     }
