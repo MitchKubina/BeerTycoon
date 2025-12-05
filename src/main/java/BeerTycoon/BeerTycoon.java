@@ -2,19 +2,20 @@ package BeerTycoon;
 
 import BeerTycoon.BeerMakers.*;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 import java.util.Timer;
 
 import BeerTycoon.Observers.GameObserver;
+import BeerTycoon.Upgrades.CostReductionUpgrade;
+import BeerTycoon.Upgrades.EfficiencyUpgrade;
+import BeerTycoon.Upgrades.UpgradeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BeerTycoon {
+
+    static final int UPGRADE_COST = 500;
 
     final static Logger logger = LoggerFactory.getLogger(BeerTycoon.class);
 
@@ -24,31 +25,65 @@ public class BeerTycoon {
     BeerMakerFactory beerMakerFactory;
     BeerTycoonGUI gui;
 
-    List<BeerMaker> beerMakers = new ArrayList<>();
-    List<BeerMaker> buttonList = new ArrayList<>();
+    List<BeerMaker> ownedBeerMakers = new ArrayList<>();
+    List<BeerMaker> beerMakerShoppingCatalog = new ArrayList<>();
 
-    public BeerTycoon(BeerMakerFactory factory, List<BeerMakerType> buttons) {
+    public BeerTycoon(BeerMakerFactory factory, List<BeerMakerType> makerButtons, List<UpgradeType> upgradeButtons) {
         this.beerMakerFactory = factory;
-        generateBeerMakers(buttons);
+        generateBeerMakers(makerButtons);
 
-        setupScreen();
+        setupScreen(upgradeButtons);
         setupTimer();
+    }
+
+    void setupScreen(List<UpgradeType> upgradeButtons)  {
+        gui = BeerTycoonGUI.getInstance();
+        gui.setGame(this);
+
+        gui.setButtons(beerMakerShoppingCatalog, upgradeButtons);
+        gui.showScreen();
+    }
+
+    public void handleMakerAction(BeerMakerType type) {
+        if (type == BeerMakerType.MakeBeer) {
+            addBeers(1.0);
+        } else {
+            addBeerMaker(type);
+        }
+    }
+
+    public void handleUpgradeAction(UpgradeType type) {
+
+        if (beers >= UPGRADE_COST && !ownedBeerMakers.isEmpty()) {
+            for (int i = 0; i < ownedBeerMakers.size(); i++) {
+                BeerMaker maker = ownedBeerMakers.get(i);
+
+                // Don't upgrade the manual clicker or already upgraded beer makers
+                if (maker.isUpgradable()) {
+                    BeerMaker upgradedMaker;
+                    if (type == UpgradeType.Efficiency) {
+                        upgradedMaker = new EfficiencyUpgrade(maker);
+                    } else {
+                        upgradedMaker = new CostReductionUpgrade(maker);
+                    }
+
+                    ownedBeerMakers.set(i, upgradedMaker);
+                    beers -= UPGRADE_COST;
+                    gui.setBeers(beers);
+                    logger.info("Upgraded " + maker.getName() + " to " + upgradedMaker.getName());
+                    return;
+                }
+            }
+        }
     }
 
     private void generateBeerMakers(List<BeerMakerType> buttons) {
         for (BeerMakerType type : buttons) {
             BeerMaker beerMaker = beerMakerFactory.getBeerMaker(type);
-            buttonList.add(beerMaker);
+            beerMakerShoppingCatalog.add(beerMaker);
 
             //beerMakers.add(beerMaker);
         }
-    }
-
-    void setupScreen()  {
-       gui = BeerTycoonGUI.getInstance();
-       gui.setGame(this);
-       gui.setButtons(buttonList);
-       gui.showScreen();
     }
 
     private void setupTimer() {
@@ -73,7 +108,7 @@ public class BeerTycoon {
 
     private void addBeer() {
         double calculatedBeers = 0;
-        for (BeerMaker beerMaker : beerMakers) {
+        for (BeerMaker beerMaker : ownedBeerMakers) {
             calculatedBeers += beerMaker.makeBeer();
         }
 
@@ -84,7 +119,7 @@ public class BeerTycoon {
         BeerMaker beerMaker = beerMakerFactory.getBeerMaker(type);
 
         if (beerMaker.getCost() <= beers) {
-            beerMakers.add(beerMaker);
+            ownedBeerMakers.add(beerMaker);
             beers -= beerMaker.getCost();
             gui.setBeers(beers);
         }
@@ -96,14 +131,24 @@ public class BeerTycoon {
 
     public static void main(String[] args) {
         BeerMakerFactory factory = new BeerMakerFactory();
-        List<BeerMakerType> button_template = Arrays.asList(BeerMakerType.MakeBeer,
+
+        // Beer Producers List
+        List<BeerMakerType> makers = Arrays.asList(
+                BeerMakerType.MakeBeer,
                 BeerMakerType.BeerDude,
                 BeerMakerType.LiquorStore,
                 BeerMakerType.BeerSilo,
                 BeerMakerType.BeerFactory,
-                BeerMakerType.BeerOcean);
+                BeerMakerType.BeerOcean
+        );
 
-        BeerTycoon game = new BeerTycoon(factory, button_template);
+        // Upgrades List
+        List<UpgradeType> upgrades = Arrays.asList(
+                UpgradeType.Efficiency,
+                UpgradeType.CostReduction
+        );
+
+        BeerTycoon game = new BeerTycoon(factory, makers, upgrades);
     }
 
 }

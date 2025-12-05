@@ -9,6 +9,7 @@ public class EfficiencyUpgrade extends BeerMaker {
 
     public EfficiencyUpgrade(BeerMaker beerMaker) {
         this.beerMaker = beerMaker;
+        this.upgradable = false;
     }
 
     @Override
@@ -23,7 +24,7 @@ public class EfficiencyUpgrade extends BeerMaker {
 
     @Override
     public String getName() {
-        return "Enhanced " + beerMaker.getName();
+        return "Efficient " + beerMaker.getName();
     }
 
 

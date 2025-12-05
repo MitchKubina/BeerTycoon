@@ -9,6 +9,7 @@ public class CostReductionUpgrade extends BeerMaker {
 
     public CostReductionUpgrade(BeerMaker beerMaker) {
         this.beerMaker = beerMaker;
+        this.upgradable = false;
     }
     @Override
     public double getCost() {
@@ -22,6 +23,6 @@ public class CostReductionUpgrade extends BeerMaker {
 
     @Override
     public String getName() {
-        return "Enhanced " + beerMaker.getName();
+        return "Cheaper " + beerMaker.getName();
     }
 }
