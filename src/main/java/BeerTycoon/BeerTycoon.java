@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 public class BeerTycoon {
 
     static final int UPGRADE_COST = 500;
+    static final int MAKE_BEER_DEFAULT_AMOUNT = 100;
 
     final static Logger logger = LoggerFactory.getLogger(BeerTycoon.class);
 
@@ -46,7 +47,7 @@ public class BeerTycoon {
 
     public void handleMakerAction(BeerMakerType type) {
         if (type == BeerMakerType.MakeBeer) {
-            addBeers(1.0);
+            addBeers(MAKE_BEER_DEFAULT_AMOUNT);
         } else {
             addBeerMaker(type);
         }
