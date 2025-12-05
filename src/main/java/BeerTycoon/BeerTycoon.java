@@ -10,12 +10,15 @@ import java.util.*;
 import java.util.List;
 import java.util.Timer;
 
+import BeerTycoon.Observers.GameObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BeerTycoon {
 
     final static Logger logger = LoggerFactory.getLogger(BeerTycoon.class);
+
+    List<GameObserver> observers = new ArrayList<>();
 
     protected double beers = 0;
     BeerMakerFactory beerMakerFactory;

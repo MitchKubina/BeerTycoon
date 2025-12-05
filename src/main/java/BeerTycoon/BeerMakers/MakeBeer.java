@@ -1,6 +1,6 @@
 package BeerTycoon.BeerMakers;
 
-public class MakeBeer implements BeerMaker{
+public class MakeBeer extends BeerMaker {
     public static double MAKE_BEER_BEERS = 1;
     private double cost = 0;
     private String name = "Make Beer";

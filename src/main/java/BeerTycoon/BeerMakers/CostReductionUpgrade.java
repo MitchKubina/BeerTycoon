@@ -1,21 +1,21 @@
 package BeerTycoon.BeerMakers;
 
-public class EnhancedBeerMaker implements BeerMaker{
+public class CostReductionUpgrade extends BeerMaker {
 
     BeerMaker beerMaker;
-    private static double ENHANCED_BEER_MULTIPLIER = 1.2;
+    private static final double COST_REDUCTION_MULTIPLIER = 0.8;
 
-    public EnhancedBeerMaker(BeerMaker beerMaker) {
+    public CostReductionUpgrade(BeerMaker beerMaker) {
         this.beerMaker = beerMaker;
     }
     @Override
     public double getCost() {
-        return beerMaker.getCost();
+        return beerMaker.getCost() * COST_REDUCTION_MULTIPLIER;
     }
 
     @Override
     public double makeBeer() {
-        return beerMaker.makeBeer() * ENHANCED_BEER_MULTIPLIER;
+        return beerMaker.makeBeer();
     }
 
     @Override
