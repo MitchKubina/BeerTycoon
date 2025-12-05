@@ -61,7 +61,9 @@ public class BeerTycoonGUI {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     BeerMakerType type = beerMakerNameToType(beerMakerString);
-                    beerTycoon.addBeerMaker(type);
+                    if (type != null) {
+                        beerTycoon.addBeerMaker(type);
+                    }
                 }
             });
         }
@@ -76,8 +78,12 @@ public class BeerTycoonGUI {
     }
 
     public BeerMakerType beerMakerNameToType(String name) {
+
+        //Normalizing the string so that the enum will match even if the string has spaces or capitalization
+        String normalizedName = name.replaceAll("\\s+", "");
+
         for (BeerMakerType type : BeerMakerType.values()) {
-            if (type.name().equals(name)) {
+            if (type.name().equals(normalizedName)) {
                 return type;
             }
         }

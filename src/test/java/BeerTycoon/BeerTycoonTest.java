@@ -1,6 +1,7 @@
 package BeerTycoon;
 
 import BeerTycoon.BeerMakers.BeerMakerFactory;
+import BeerTycoon.BeerMakers.BeerMakerType;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -13,8 +14,8 @@ public class BeerTycoonTest {
     @Test
     void testInstance() {
         BeerMakerFactory factory = new BeerMakerFactory();
-        List<String> buttons = new ArrayList<>();
-        buttons.add("Make Beer");
+        List<BeerMakerType> buttons = new ArrayList<>();
+        buttons.add(BeerMakerType.MakeBeer);
         BeerTycoon game = new BeerTycoon(factory, buttons);
 
         assertTrue(true);
