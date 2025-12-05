@@ -1,6 +1,7 @@
 package BeerTycoon;
 
 import BeerTycoon.BeerMakers.BeerMaker;
+import BeerTycoon.BeerMakers.BeerMakerType;
 import BeerTycoon.BeerMakers.MakeBeer;
 
 import javax.swing.*;
@@ -59,7 +60,8 @@ public class BeerTycoonGUI {
             beerMakerButtons.get(i).addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    beerTycoon.addBeerMaker(beerMakerString);
+                    BeerMakerType type = beerMakerNameToType(beerMakerString);
+                    beerTycoon.addBeerMaker(type);
                 }
             });
         }
@@ -71,6 +73,15 @@ public class BeerTycoonGUI {
                 beerTycoon.addBeers(1.0);
             }
         });
+    }
+
+    public BeerMakerType beerMakerNameToType(String name) {
+        for (BeerMakerType type : BeerMakerType.values()) {
+            if (type.name().equals(name)) {
+                return type;
+            }
+        }
+        return null;
     }
 
     public void setBeers(double beers) {

@@ -24,7 +24,7 @@ public class BeerTycoon {
     List<BeerMaker> beerMakers = new ArrayList<>();
     List<BeerMaker> buttonList = new ArrayList<>();
 
-    public BeerTycoon(BeerMakerFactory factory, List<String> buttons) {
+    public BeerTycoon(BeerMakerFactory factory, List<BeerMakerType> buttons) {
         this.beerMakerFactory = factory;
         generateBeerMakers(buttons);
 
@@ -32,9 +32,9 @@ public class BeerTycoon {
         setupTimer();
     }
 
-    private void generateBeerMakers(List<String> buttons) {
-        for (String beerMakerName : buttons) {
-            BeerMaker beerMaker = beerMakerFactory.getBeerMaker(beerMakerName);
+    private void generateBeerMakers(List<BeerMakerType> buttons) {
+        for (BeerMakerType type : buttons) {
+            BeerMaker beerMaker = beerMakerFactory.getBeerMaker(type);
             buttonList.add(beerMaker);
 
             //beerMakers.add(beerMaker);
@@ -77,8 +77,8 @@ public class BeerTycoon {
         beers += calculatedBeers;
     }
 
-    void addBeerMaker(String name) {
-        BeerMaker beerMaker = beerMakerFactory.getBeerMaker(name);
+    void addBeerMaker(BeerMakerType type) {
+        BeerMaker beerMaker = beerMakerFactory.getBeerMaker(type);
 
         if (beerMaker.getCost() <= beers) {
             beerMakers.add(beerMaker);
@@ -93,9 +93,14 @@ public class BeerTycoon {
 
     public static void main(String[] args) {
         BeerMakerFactory factory = new BeerMakerFactory();
-        List<String> BUTTON_TEMPLATE = Arrays.asList("Make Beer", "Beer Dude", "Liquor Store", "Beer Silo", "Beer Factory", "Beer Ocean");
+        List<BeerMakerType> button_template = Arrays.asList(BeerMakerType.MakeBeer,
+                BeerMakerType.BeerDude,
+                BeerMakerType.LiquorStore,
+                BeerMakerType.BeerSilo,
+                BeerMakerType.BeerFactory,
+                BeerMakerType.BeerOcean);
 
-        BeerTycoon game = new BeerTycoon(factory,BUTTON_TEMPLATE);
+        BeerTycoon game = new BeerTycoon(factory, button_template);
     }
 
 }
