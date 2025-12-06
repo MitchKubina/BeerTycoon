@@ -1,8 +1,9 @@
-package BeerTycoon;
+package beerTycoon;
 
-import BeerTycoon.BeerMakers.BeerMaker;
-import BeerTycoon.BeerMakers.BeerMakerType;
-import BeerTycoon.Upgrades.UpgradeType;
+import beerTycoon.beerMakers.BeerMaker;
+import beerTycoon.beerMakers.BeerMakerType;
+import beerTycoon.observers.GameObserver;
+import beerTycoon.upgrades.UpgradeType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,12 +12,14 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static BeerTycoon.BeerTycoon.UPGRADE_COST;
+import static beerTycoon.BeerTycoon.UPGRADE_COST;
 
 //singleton class?
 public class BeerTycoonGUI {
 
     private static BeerTycoonGUI guiInstance;
+
+    GameObserver observer;
 
     private JFrame frame = new JFrame();
 

@@ -1,7 +1,7 @@
-package BeerTycoon;
+package beerTycoon;
 
-import BeerTycoon.BeerMakers.BeerMakerFactory;
-import BeerTycoon.BeerMakers.BeerMakerType;
+import beerTycoon.beerMakers.BeerMakerFactory;
+import beerTycoon.beerMakers.BeerMakerType;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

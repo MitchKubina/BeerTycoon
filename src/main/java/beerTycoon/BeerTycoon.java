@@ -1,15 +1,15 @@
-package BeerTycoon;
+package beerTycoon;
 
-import BeerTycoon.BeerMakers.*;
+import beerTycoon.beerMakers.*;
 
 import java.util.*;
 import java.util.List;
 import java.util.Timer;
 
-import BeerTycoon.Observers.GameObserver;
-import BeerTycoon.Upgrades.CostReductionUpgrade;
-import BeerTycoon.Upgrades.EfficiencyUpgrade;
-import BeerTycoon.Upgrades.UpgradeType;
+import beerTycoon.observers.GameObserver;
+import beerTycoon.upgrades.CostReductionUpgrade;
+import beerTycoon.upgrades.EfficiencyUpgrade;
+import beerTycoon.upgrades.UpgradeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +21,6 @@ public class BeerTycoon {
     static final int TIMER_DELAY = 0;
 
     final static Logger logger = LoggerFactory.getLogger(BeerTycoon.class);
-
-    List<GameObserver> observers = new ArrayList<>();
 
     protected double beers = 0;
     BeerMakerFactory beerMakerFactory;
@@ -66,10 +64,8 @@ public class BeerTycoon {
     //Where the logic will go of calculating beers, updating values, enabling/disabling buttons
     private void refreshScreen() {
         addBeerFromBeerMakers();
-
         String formattedBeers = String.format("Total: %d beers", (int) beers);
         logger.info(formattedBeers);
-
         gui.updateBeerCount(beers);
     }
 
@@ -123,6 +119,8 @@ public class BeerTycoon {
 
     public static void main(String[] args) {
         BeerMakerFactory factory = new BeerMakerFactory();
+
+        GameObserver observer = new GameObserver();
 
         // Beer Producers List
         List<BeerMakerType> makers = Arrays.asList(

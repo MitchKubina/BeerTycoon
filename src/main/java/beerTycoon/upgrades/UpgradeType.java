@@ -1,4 +1,4 @@
-package BeerTycoon.Upgrades;
+package beerTycoon.upgrades;
 
 public enum UpgradeType {
     CostReduction,

@@ -1,4 +1,4 @@
-package BeerTycoon.BeerMakers;
+package beerTycoon.beerMakers;
 
 public class LiquorStore extends BeerMaker{
     private static double LIQUOR_STORE_COST = 100;

@@ -1,6 +1,6 @@
-package BeerTycoon.Upgrades;
+package beerTycoon.upgrades;
 
-import BeerTycoon.BeerMakers.BeerMaker;
+import beerTycoon.beerMakers.BeerMaker;
 
 public class CostReductionUpgrade extends BeerMaker {
 
