@@ -55,9 +55,11 @@ public class BeerTycoonTest {
         game.refreshScreen();
         game.refreshScreen();
 
-        double expectedBeers = 100;
 
-        assertEquals(game.getBeers(), 100);
+        //because the game will refresh the screen after a second
+        double expectedBeers = 150;
+
+        assertEquals(game.getBeers(), expectedBeers);
 
     }
 }
