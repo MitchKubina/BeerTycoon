@@ -17,7 +17,7 @@ public class BeerTycoon {
 
     static final int UPGRADE_COST = 500;
     static final int MAKE_BEER_DEFAULT_AMOUNT = 100;
-    static final int TIMER_REFRESH_PERIOD = 1000;
+    static final int TIMER_REFRESH_PERIOD = 50;
     static final int TIMER_DELAY = 0;
 
     final static Logger logger = LoggerFactory.getLogger(BeerTycoon.class);
@@ -70,7 +70,7 @@ public class BeerTycoon {
         String formattedBeers = String.format("Total: %d beers", (int) beers);
         logger.info(formattedBeers);
 
-        gui.setBeers(beers);
+        gui.updateBeerCount(beers);
     }
 
     private void addBeerFromBeerMakers() {
@@ -82,25 +82,17 @@ public class BeerTycoon {
         beers += calculatedBeers;
     }
 
-    void manuallyMakeBeers(double beersToAdd) {
-        this.beers += beersToAdd;
+    void manuallyMakeBeers() {
+        this.beers += MAKE_BEER_DEFAULT_AMOUNT;
     }
 
-    void addBeerMaker(BeerMakerType type) {
+    void buyAndAddBeerMaker(BeerMakerType type) {
         BeerMaker beerMaker = beerMakerFactory.getBeerMaker(type);
 
         if (beerMaker.getCost() <= beers) {
             ownedBeerMakers.add(beerMaker);
             beers -= beerMaker.getCost();
-            gui.setBeers(beers);
-        }
-    }
-
-    public void handleMakerAction(BeerMakerType type) {
-        if (type == BeerMakerType.MakeBeer) {
-            manuallyMakeBeers(MAKE_BEER_DEFAULT_AMOUNT);
-        } else {
-            addBeerMaker(type);
+            refreshScreen();
         }
     }
 
@@ -121,7 +113,7 @@ public class BeerTycoon {
 
                     ownedBeerMakers.set(i, upgradedMaker);
                     beers -= UPGRADE_COST;
-                    gui.setBeers(beers);
+                    refreshScreen();
                     logger.info("Upgraded " + maker.getName() + " to " + upgradedMaker.getName());
                     return;
                 }

@@ -2,7 +2,6 @@ package BeerTycoon;
 
 import BeerTycoon.BeerMakers.BeerMaker;
 import BeerTycoon.BeerMakers.BeerMakerType;
-import BeerTycoon.BeerMakers.MakeBeer;
 import BeerTycoon.Upgrades.UpgradeType;
 
 import javax.swing.*;
@@ -77,32 +76,20 @@ public class BeerTycoonGUI {
             upgradeButtons.add(btn);
         }
 
-        setBeers(0);
+        updateBeerCount(0);
 
         labelPanel.add(beersLabel);
         setButtonFunctions();
     }
 
     private void setButtonFunctions() {
-
         // Beer Producer Buttons Logic
-        for (int i = 0; i < beerMakerButtons.size(); i++) {
-            final int index = i;
-            beerMakerButtons.get(i).addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    String name = beerMakers.get(index).getName();
-                    BeerMakerType type = beerMakerNameToType(name);
-
-                    if (type != null) {
-                        //Using BeerTycoon to hangle game logic
-                        beerTycoon.handleMakerAction(type);
-                    }
-                }
-            });
-        }
-
+        setBeerMakerButtons();
         // Upgrade Buttons Logic
+        setUpgradeButtons();
+    }
+
+    private void setUpgradeButtons() {
         for (int i = 0; i < upgradeButtons.size(); i++) {
             final UpgradeType type = upgradeTypes.get(i);
             upgradeButtons.get(i).addActionListener(new ActionListener() {
@@ -115,8 +102,33 @@ public class BeerTycoonGUI {
         }
     }
 
-    public BeerMakerType beerMakerNameToType(String name) {
+    private void setBeerMakerButtons() {
+        for (int i = 0; i < beerMakerButtons.size(); i++) {
+            final int index = i;
+            beerMakerButtons.get(i).addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String name = beerMakers.get(index).getName();
+                    BeerMakerType type = beerMakerNameToType(name);
 
+                    if (type != null) {
+                        //Using BeerTycoon to hangle game logic
+                        handleMakerButtonAction(type);
+                    }
+                }
+            });
+        }
+    }
+
+    public void handleMakerButtonAction(BeerMakerType type) {
+        if (type == BeerMakerType.MakeBeer) {
+            beerTycoon.manuallyMakeBeers();
+        } else {
+            beerTycoon.buyAndAddBeerMaker(type);
+        }
+    }
+
+    public BeerMakerType beerMakerNameToType(String name) {
         //Normalizing the string so that the enum will match even if the string has spaces or capitalization
         String normalizedName = name.replaceAll("\\s+", "");
 
@@ -128,13 +140,16 @@ public class BeerTycoonGUI {
         return null;
     }
 
-    public void setBeers(double beers) {
+    public void updateBeerCount(double beers) {
+        updateBeerMakerPurchasablity(beers);
+        String formattedBeers = String.format("Total: %d beers", (int) beers);
+        beersLabel.setText(formattedBeers);
+    }
+
+    private void updateBeerMakerPurchasablity(double beers) {
         for (int i = 0; i < beerMakerButtons.size(); i++) {
             beerMakerButtons.get(i).setEnabled(beers >= beerMakers.get(i).getCost());
         }
-
-        String formattedBeers = String.format("Total: %d beers", (int) beers);
-        beersLabel.setText(formattedBeers);
     }
 
     //sets us up to have some observers
