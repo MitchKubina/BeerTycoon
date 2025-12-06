@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.List;
 import java.util.Timer;
 
-import beerTycoon.observers.GameObserver;
+import beerTycoon.observers.AudibleGameObserver;
 import beerTycoon.observers.IObserver;
 import beerTycoon.upgrades.CostReductionUpgrade;
 import beerTycoon.upgrades.EfficiencyUpgrade;
@@ -28,6 +28,7 @@ public class BeerTycoon {
     List<IObserver> observers = new ArrayList<>();
 
     protected double beers = 0;
+    protected int upgrades = 0;
     BeerMakerFactory beerMakerFactory;
     BeerTycoonGUI gui;
 
@@ -60,27 +61,30 @@ public class BeerTycoon {
         t.schedule(new TimerTask() {
             @Override
             public void run() {
-                refreshScreen();
+                refreshCurrentGameState();
             }
         }, TIMER_DELAY, TIMER_REFRESH_PERIOD);
     }
 
     //Where the logic will go of calculating beers, updating values, enabling/disabling buttons
-    public void refreshScreen() {
+    public void refreshCurrentGameState() {
         addBeerFromBeerMakers();
         String formattedBeers = String.format("Total: %d beers", (int) beers);
         logger.info(formattedBeers);
         gui.updateBeerCount(beers);
+        notifyObservers();
     }
 
     public void attach(IObserver observer) {
         this.observers.add(observer);
     }
 
-    public void detach(IObserver observer) {
-        if (observers.contains(observer)) {
-            observers.remove(observer);
-        }
+    public int getBeerMakerCount() {
+        return ownedBeerMakers.size();
+    }
+
+    public int getUpgradesCount() {
+        return upgrades;
     }
 
     public void notifyObservers() {
@@ -109,7 +113,7 @@ public class BeerTycoon {
         if (beerMaker.getCost() <= beers) {
             ownedBeerMakers.add(beerMaker);
             beers -= beerMaker.getCost();
-            refreshScreen();
+            refreshCurrentGameState();
             notifyObservers();
         }
     }
@@ -131,7 +135,8 @@ public class BeerTycoon {
 
                     ownedBeerMakers.set(i, upgradedMaker);
                     beers -= UPGRADE_COST;
-                    refreshScreen();
+                    upgrades++;
+                    refreshCurrentGameState();
                     notifyObservers();
                     logger.info("Upgraded " + maker.getName() + " to " + upgradedMaker.getName());
                     return;
@@ -152,7 +157,7 @@ public class BeerTycoon {
         BeerMakerFactory factory = new BeerMakerFactory();
 
         AudiblePlayer player = new AudiblePlayer();
-        GameObserver observer = new GameObserver(player);
+        AudibleGameObserver observer = new AudibleGameObserver(player);
 
         // Beer Producers List
         List<BeerMakerType> makers = Arrays.asList(

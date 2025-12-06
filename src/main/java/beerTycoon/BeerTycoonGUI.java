@@ -2,7 +2,7 @@ package beerTycoon;
 
 import beerTycoon.beerMakers.BeerMaker;
 import beerTycoon.beerMakers.BeerMakerType;
-import beerTycoon.observers.GameObserver;
+import beerTycoon.observers.AudibleGameObserver;
 import beerTycoon.upgrades.UpgradeType;
 
 import javax.swing.*;
@@ -19,7 +19,9 @@ public class BeerTycoonGUI {
 
     private static BeerTycoonGUI guiInstance;
 
-    GameObserver observer;
+    static final int STARTING_GAME_STATISTICS_COUNTS = 0;
+
+    AudibleGameObserver observer;
 
     private JFrame frame = new JFrame();
 
@@ -174,7 +176,7 @@ public class BeerTycoonGUI {
         middlePanel.setLayout(new BoxLayout(middlePanel,BoxLayout.PAGE_AXIS));
         messagePanel.add(messageLabel);
 
-        updateGameStatisticsMessage();
+        updateGameStatisticsMessage(STARTING_GAME_STATISTICS_COUNTS, STARTING_GAME_STATISTICS_COUNTS);
 
         middlePanel.add(textArea);
         middlePanel.add(labelPanel);
@@ -185,17 +187,10 @@ public class BeerTycoonGUI {
     }
 
     //TODO: make observer for beer clicks and/or all game counts/data and update GUI accordingly
-    private void updateGameStatisticsMessage() {
+    public void updateGameStatisticsMessage(int beerMakersCount, int upgradesCount) {
         textArea.setText("BEER!" +
-                "\n Beer Clicks: " + 0 +
-                "\n Beer Dudes: " + 0 +
-                "\n Liquor Stores: " + 0 +
-                "\n Beer Silos: " + 0 +
-                "\n Beer Factories: " + 0 +
-                "\n Beer Oceans: " + 0 +
-                "\n\n Upgrades: " +
-                "\n Efficiency: " + 0 +
-                "\n Cost Reduction: " + 0);
+                "\nBeer Makers: " + beerMakersCount +
+                "\n Upgrades: " + upgradesCount);
     }
 
 }

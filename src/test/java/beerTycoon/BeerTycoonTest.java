@@ -52,8 +52,8 @@ public class BeerTycoonTest {
 
         BeerMaker beerFactory = factory.getBeerMaker(BeerMakerType.BeerFactory);
         game.addBeerMaker(beerFactory);
-        game.refreshScreen();
-        game.refreshScreen();
+        game.refreshCurrentGameState();
+        game.refreshCurrentGameState();
         game.notifyObservers();
 
 
