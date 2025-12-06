@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 public class BeerTycoon {
 
     static final int UPGRADE_COST = 500;
-    static final int MAKE_BEER_DEFAULT_AMOUNT = 100;
+    static final int MAKE_BEER_DEFAULT_AMOUNT = 1;
     static final int TIMER_REFRESH_PERIOD = 50;
     static final int TIMER_DELAY = 0;
     static final int STARTING_BEER_COUNT = 0;
