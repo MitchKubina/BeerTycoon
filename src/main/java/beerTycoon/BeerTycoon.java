@@ -117,6 +117,10 @@ public class BeerTycoon {
         }
     }
 
+    public double getBeers()  {
+        return beers;
+    }
+
     public static void main(String[] args) {
         BeerMakerFactory factory = new BeerMakerFactory();
 
