@@ -1,9 +1,9 @@
-package BeerTycoon;
+package beerTycoon;
 
-import BeerTycoon.BeerMakers.BeerMaker;
-import BeerTycoon.BeerMakers.BeerMakerType;
-import BeerTycoon.BeerMakers.MakeBeer;
-import BeerTycoon.Upgrades.UpgradeType;
+import beerTycoon.beerMakers.BeerMaker;
+import beerTycoon.beerMakers.BeerMakerType;
+import beerTycoon.observers.AudibleGameObserver;
+import beerTycoon.upgrades.UpgradeType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,12 +12,16 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static BeerTycoon.BeerTycoon.UPGRADE_COST;
+import static beerTycoon.BeerTycoon.UPGRADE_COST;
 
 //singleton class?
 public class BeerTycoonGUI {
 
     private static BeerTycoonGUI guiInstance;
+
+    static final int STARTING_GAME_STATISTICS_COUNTS = 0;
+
+    AudibleGameObserver observer;
 
     private JFrame frame = new JFrame();
 
@@ -49,17 +53,25 @@ public class BeerTycoonGUI {
         return guiInstance;
     }
 
-    public void setGame(BeerTycoon beerTycoon) {
+    public void initializeGame(BeerTycoon beerTycoon, List<BeerMaker> beerMakerShoppingCatalog, List<UpgradeType> upgradeButtons) {
+        setGame(beerTycoon);
+        setUpFrame();
+        setButtons(beerMakerShoppingCatalog, upgradeButtons);
+        showScreen();
+    }
+
+    private void setGame(BeerTycoon beerTycoon) {
         this.beerTycoon = beerTycoon;
     }
 
-    public void setButtons(List<BeerMaker> makerList, List<UpgradeType> upgradeList) {
+    private void setButtons(List<BeerMaker> makerList, List<UpgradeType> upgradeList) {
         this.beerMakers = makerList;
         this.upgradeTypes = upgradeList;
 
-        frame = new JFrame("Beer Tycoon");
-        frame.setSize(1200,300);
-        frame.setLayout(new BorderLayout());
+        beerMakerButtons.clear();
+        upgradeButtons.clear();
+        buttonPanel.removeAll();
+        upgradePanel.removeAll();
 
         // Setup Beer Producer Buttons
         buttonPanel.setLayout(new GridLayout(1, makerList.size()));
@@ -77,32 +89,24 @@ public class BeerTycoonGUI {
             upgradeButtons.add(btn);
         }
 
-        setBeers(0);
-
         labelPanel.add(beersLabel);
         setButtonFunctions();
     }
 
+    private void setUpFrame() {
+        frame = new JFrame("Beer Tycoon");
+        frame.setSize(1200,300);
+        frame.setLayout(new BorderLayout());
+    }
+
     private void setButtonFunctions() {
-
         // Beer Producer Buttons Logic
-        for (int i = 0; i < beerMakerButtons.size(); i++) {
-            final int index = i;
-            beerMakerButtons.get(i).addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    String name = beerMakers.get(index).getName();
-                    BeerMakerType type = beerMakerNameToType(name);
-
-                    if (type != null) {
-                        //Using BeerTycoon to hangle game logic
-                        beerTycoon.handleMakerAction(type);
-                    }
-                }
-            });
-        }
-
+        setBeerMakerButtons();
         // Upgrade Buttons Logic
+        setUpgradeButtons();
+    }
+
+    private void setUpgradeButtons() {
         for (int i = 0; i < upgradeButtons.size(); i++) {
             final UpgradeType type = upgradeTypes.get(i);
             upgradeButtons.get(i).addActionListener(new ActionListener() {
@@ -115,8 +119,33 @@ public class BeerTycoonGUI {
         }
     }
 
-    public BeerMakerType beerMakerNameToType(String name) {
+    private void setBeerMakerButtons() {
+        for (int i = 0; i < beerMakerButtons.size(); i++) {
+            final int index = i;
+            beerMakerButtons.get(i).addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String name = beerMakers.get(index).getName();
+                    BeerMakerType type = beerMakerNameToType(name);
 
+                    if (type != null) {
+                        //Using BeerTycoon to hangle game logic
+                        handleMakerButtonAction(type);
+                    }
+                }
+            });
+        }
+    }
+
+    private void handleMakerButtonAction(BeerMakerType type) {
+        if (type == BeerMakerType.MakeBeer) {
+            beerTycoon.manuallyMakeBeers();
+        } else {
+            beerTycoon.buyAndAddBeerMaker(type);
+        }
+    }
+
+    private BeerMakerType beerMakerNameToType(String name) {
         //Normalizing the string so that the enum will match even if the string has spaces or capitalization
         String normalizedName = name.replaceAll("\\s+", "");
 
@@ -128,28 +157,26 @@ public class BeerTycoonGUI {
         return null;
     }
 
-    public void setBeers(double beers) {
-        for (int i = 0; i < beerMakerButtons.size(); i++) {
-            beerMakerButtons.get(i).setEnabled(beers >= beerMakers.get(i).getCost());
-        }
-
+    public void updateBeerCount(double beers) {
+        updateBeerMakerPurchasablity(beers);
         String formattedBeers = String.format("Total: %d beers", (int) beers);
         beersLabel.setText(formattedBeers);
     }
 
-    //sets us up to have some observers
-    public void setMessage(String message) {
-        messageLabel.setText(message);
+    private void updateBeerMakerPurchasablity(double beers) {
+        for (int i = 0; i < beerMakerButtons.size(); i++) {
+            beerMakerButtons.get(i).setEnabled(beers >= beerMakers.get(i).getCost());
+        }
     }
 
-    public void showScreen() {
+    private void showScreen() {
         frame.add(buttonPanel, BorderLayout.SOUTH);
         frame.add(upgradePanel, BorderLayout.EAST);
 
         middlePanel.setLayout(new BoxLayout(middlePanel,BoxLayout.PAGE_AXIS));
         messagePanel.add(messageLabel);
 
-        updateGameStatisticsMessage();
+        updateGameStatisticsMessage(STARTING_GAME_STATISTICS_COUNTS, STARTING_GAME_STATISTICS_COUNTS);
 
         middlePanel.add(textArea);
         middlePanel.add(labelPanel);
@@ -159,18 +186,10 @@ public class BeerTycoonGUI {
         frame.setVisible(true);
     }
 
-    //TODO: make observer for beer clicks and/or all game counts/data and update GUI accordingly
-    private void updateGameStatisticsMessage() {
+    public void updateGameStatisticsMessage(int beerMakersCount, int upgradesCount) {
         textArea.setText("BEER!" +
-                "\n Beer Clicks: " + 0 +
-                "\n Beer Dudes: " + 0 +
-                "\n Liquor Stores: " + 0 +
-                "\n Beer Silos: " + 0 +
-                "\n Beer Factories: " + 0 +
-                "\n Beer Oceans: " + 0 +
-                "\n\n Upgrades: " +
-                "\n Efficiency: " + 0 +
-                "\n Cost Reduction: " + 0);
+                "\nBeer Makers: " + beerMakersCount +
+                "\n Upgrades: " + upgradesCount);
     }
 
 }

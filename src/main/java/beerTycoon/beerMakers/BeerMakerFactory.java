@@ -1,4 +1,4 @@
-package BeerTycoon.BeerMakers;
+package beerTycoon.beerMakers;
 
 public class BeerMakerFactory {
     public BeerMakerFactory() {}

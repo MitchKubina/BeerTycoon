@@ -1,4 +1,4 @@
-package BeerTycoon.BeerMakers;
+package beerTycoon.beerMakers;
 
 public class BeerDude extends BeerMaker{
     private static double BEER_DUDE_BEERS = 1;

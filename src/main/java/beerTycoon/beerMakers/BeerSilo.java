@@ -1,4 +1,4 @@
-package BeerTycoon.BeerMakers;
+package beerTycoon.beerMakers;
 
 public class BeerSilo extends BeerMaker {
     public static double BEER_SILO_COST = 1000;
