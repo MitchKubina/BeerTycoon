@@ -20,6 +20,11 @@ public class AudibleGameObserver implements IObserver {
 
     @Override
     public void update(BeerTycoon game) {
+        shoutOutMilestoneIfAchieved(game);
+        extractAndUpdateGameStats(game);
+    }
+
+    private void shoutOutMilestoneIfAchieved(BeerTycoon game) {
         beersPrevious = currentBeers;
         currentBeers = game.getBeers();
 
@@ -30,13 +35,9 @@ public class AudibleGameObserver implements IObserver {
                 player.say(formattedString);
             }
         }
-
-        extractAndUpdateGameStats(game);
-
     }
 
     private void extractAndUpdateGameStats(BeerTycoon game) {
-
         int beerMakersCount = game.getBeerMakerCount();
         int upgradesCount = game.getUpgradesCount();
 

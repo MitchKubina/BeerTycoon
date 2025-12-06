@@ -186,7 +186,6 @@ public class BeerTycoonGUI {
         frame.setVisible(true);
     }
 
-    //TODO: make observer for beer clicks and/or all game counts/data and update GUI accordingly
     public void updateGameStatisticsMessage(int beerMakersCount, int upgradesCount) {
         textArea.setText("BEER!" +
                 "\nBeer Makers: " + beerMakersCount +
