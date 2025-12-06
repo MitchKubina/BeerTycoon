@@ -1,5 +1,6 @@
 package beerTycoon;
 
+import beerTycoon.audible.AudiblePlayer;
 import beerTycoon.beerMakers.*;
 
 import java.util.*;
@@ -62,7 +63,7 @@ public class BeerTycoon {
     }
 
     //Where the logic will go of calculating beers, updating values, enabling/disabling buttons
-    private void refreshScreen() {
+    public void refreshScreen() {
         addBeerFromBeerMakers();
         String formattedBeers = String.format("Total: %d beers", (int) beers);
         logger.info(formattedBeers);
@@ -117,6 +118,10 @@ public class BeerTycoon {
         }
     }
 
+    public void addBeerMaker(BeerMaker maker) {
+        this.ownedBeerMakers.add(maker);
+    }
+
     public double getBeers()  {
         return beers;
     }
@@ -124,7 +129,8 @@ public class BeerTycoon {
     public static void main(String[] args) {
         BeerMakerFactory factory = new BeerMakerFactory();
 
-        GameObserver observer = new GameObserver();
+        AudiblePlayer player = new AudiblePlayer();
+        GameObserver observer = new GameObserver(player);
 
         // Beer Producers List
         List<BeerMakerType> makers = Arrays.asList(

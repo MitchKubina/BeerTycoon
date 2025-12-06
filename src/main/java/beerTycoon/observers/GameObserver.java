@@ -4,9 +4,9 @@ import beerTycoon.BeerTycoon;
 import beerTycoon.audible.AudiblePlayer;
 
 public class GameObserver implements IObserver {
-    AudiblePlayer player;
+    private AudiblePlayer player;
 
-    GameObserver(AudiblePlayer player) {
+    public GameObserver(AudiblePlayer player) {
         this.player = player;
     }
 
