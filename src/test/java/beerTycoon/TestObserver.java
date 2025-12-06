@@ -13,7 +13,6 @@ public class TestObserver implements IObserver {
         purchasedBeerMakers = game.ownedBeerMakers;
     }
 
-    //TODO: use this in a test
     public List<BeerMaker> getPurchasedBeerMakers() {
         return purchasedBeerMakers;
     }

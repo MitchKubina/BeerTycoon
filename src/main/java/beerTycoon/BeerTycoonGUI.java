@@ -51,17 +51,25 @@ public class BeerTycoonGUI {
         return guiInstance;
     }
 
-    public void setGame(BeerTycoon beerTycoon) {
+    public void initializeGame(BeerTycoon beerTycoon, List<BeerMaker> beerMakerShoppingCatalog, List<UpgradeType> upgradeButtons) {
+        setGame(beerTycoon);
+        setUpFrame();
+        setButtons(beerMakerShoppingCatalog, upgradeButtons);
+        showScreen();
+    }
+
+    private void setGame(BeerTycoon beerTycoon) {
         this.beerTycoon = beerTycoon;
     }
 
-    public void setButtons(List<BeerMaker> makerList, List<UpgradeType> upgradeList) {
+    private void setButtons(List<BeerMaker> makerList, List<UpgradeType> upgradeList) {
         this.beerMakers = makerList;
         this.upgradeTypes = upgradeList;
 
-        frame = new JFrame("Beer Tycoon");
-        frame.setSize(1200,300);
-        frame.setLayout(new BorderLayout());
+        beerMakerButtons.clear();
+        upgradeButtons.clear();
+        buttonPanel.removeAll();
+        upgradePanel.removeAll();
 
         // Setup Beer Producer Buttons
         buttonPanel.setLayout(new GridLayout(1, makerList.size()));
@@ -79,10 +87,14 @@ public class BeerTycoonGUI {
             upgradeButtons.add(btn);
         }
 
-        updateBeerCount(0);
-
         labelPanel.add(beersLabel);
         setButtonFunctions();
+    }
+
+    private void setUpFrame() {
+        frame = new JFrame("Beer Tycoon");
+        frame.setSize(1200,300);
+        frame.setLayout(new BorderLayout());
     }
 
     private void setButtonFunctions() {
@@ -123,7 +135,7 @@ public class BeerTycoonGUI {
         }
     }
 
-    public void handleMakerButtonAction(BeerMakerType type) {
+    private void handleMakerButtonAction(BeerMakerType type) {
         if (type == BeerMakerType.MakeBeer) {
             beerTycoon.manuallyMakeBeers();
         } else {
@@ -131,7 +143,7 @@ public class BeerTycoonGUI {
         }
     }
 
-    public BeerMakerType beerMakerNameToType(String name) {
+    private BeerMakerType beerMakerNameToType(String name) {
         //Normalizing the string so that the enum will match even if the string has spaces or capitalization
         String normalizedName = name.replaceAll("\\s+", "");
 
@@ -155,12 +167,7 @@ public class BeerTycoonGUI {
         }
     }
 
-    //sets us up to have some observers
-    public void setMessage(String message) {
-        messageLabel.setText(message);
-    }
-
-    public void showScreen() {
+    private void showScreen() {
         frame.add(buttonPanel, BorderLayout.SOUTH);
         frame.add(upgradePanel, BorderLayout.EAST);
 

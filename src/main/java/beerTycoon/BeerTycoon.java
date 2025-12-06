@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Timer;
 
 import beerTycoon.observers.GameObserver;
+import beerTycoon.observers.IObserver;
 import beerTycoon.upgrades.CostReductionUpgrade;
 import beerTycoon.upgrades.EfficiencyUpgrade;
 import beerTycoon.upgrades.UpgradeType;
@@ -20,8 +21,11 @@ public class BeerTycoon {
     static final int MAKE_BEER_DEFAULT_AMOUNT = 100;
     static final int TIMER_REFRESH_PERIOD = 50;
     static final int TIMER_DELAY = 0;
+    static final int STARTING_BEER_COUNT = 0;
 
     final static Logger logger = LoggerFactory.getLogger(BeerTycoon.class);
+
+    List<IObserver> observers = new ArrayList<>();
 
     protected double beers = 0;
     BeerMakerFactory beerMakerFactory;
@@ -31,18 +35,17 @@ public class BeerTycoon {
     List<BeerMaker> beerMakerShoppingCatalog = new ArrayList<>();
 
     //**Example of Dependency Injection With Factory**
-    public BeerTycoon(BeerMakerFactory factory, List<BeerMakerType> makerButtons, List<UpgradeType> upgradeButtons) {
+    public BeerTycoon(BeerMakerFactory factory, List<BeerMakerType> makerButtons, List<UpgradeType> upgradeTypes) {
         this.beerMakerFactory = factory;
         generateBeerMakerButtons(makerButtons);
-        setUpScreen(upgradeButtons);
+        setUpScreen(upgradeTypes);
+        gui.updateBeerCount(STARTING_BEER_COUNT);
         setupTimer();
     }
 
-    void setUpScreen(List<UpgradeType> upgradeButtons)  {
+    void setUpScreen(List<UpgradeType> upgradeTypes)  {
         gui = BeerTycoonGUI.getInstance(); //Singleton
-        gui.setGame(this);
-        gui.setButtons(beerMakerShoppingCatalog, upgradeButtons);
-        gui.showScreen();
+        gui.initializeGame(this, beerMakerShoppingCatalog, upgradeTypes);
     }
 
     private void generateBeerMakerButtons(List<BeerMakerType> buttons) {
@@ -70,6 +73,22 @@ public class BeerTycoon {
         gui.updateBeerCount(beers);
     }
 
+    public void attach(IObserver observer) {
+        this.observers.add(observer);
+    }
+
+    public void detach(IObserver observer) {
+        if (observers.contains(observer)) {
+            observers.remove(observer);
+        }
+    }
+
+    public void notifyObservers() {
+        for (IObserver observer : observers) {
+            observer.update(this);
+        }
+    }
+
     private void addBeerFromBeerMakers() {
         double calculatedBeers = 0;
         for (BeerMaker beerMaker : ownedBeerMakers) {
@@ -81,6 +100,7 @@ public class BeerTycoon {
 
     void manuallyMakeBeers() {
         this.beers += MAKE_BEER_DEFAULT_AMOUNT;
+        notifyObservers();
     }
 
     void buyAndAddBeerMaker(BeerMakerType type) {
@@ -90,6 +110,7 @@ public class BeerTycoon {
             ownedBeerMakers.add(beerMaker);
             beers -= beerMaker.getCost();
             refreshScreen();
+            notifyObservers();
         }
     }
 
@@ -111,6 +132,7 @@ public class BeerTycoon {
                     ownedBeerMakers.set(i, upgradedMaker);
                     beers -= UPGRADE_COST;
                     refreshScreen();
+                    notifyObservers();
                     logger.info("Upgraded " + maker.getName() + " to " + upgradedMaker.getName());
                     return;
                 }
@@ -149,6 +171,7 @@ public class BeerTycoon {
         );
 
         BeerTycoon game = new BeerTycoon(factory, makers, upgrades);
+        game.attach(observer);
     }
 
 }

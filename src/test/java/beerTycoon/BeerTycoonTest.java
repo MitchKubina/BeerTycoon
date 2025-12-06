@@ -19,15 +19,15 @@ public class BeerTycoonTest {
 
     @Test
     void testInstance() {
-        List<BeerMakerType> buttons = new ArrayList<>();
-        buttons.add(BeerMakerType.MakeBeer);
+        List<BeerMakerType> makers = new ArrayList<>();
+        makers.add(BeerMakerType.MakeBeer);
         List<UpgradeType> upgrades = Arrays.asList(
                 UpgradeType.Efficiency,
                 UpgradeType.CostReduction
         );
 
-        BeerTycoon game = new BeerTycoon(factory, buttons, upgrades);
-
+        BeerTycoon game = new BeerTycoon(factory, makers, upgrades);
+        game.attach(new TestObserver());
         assertTrue(true);
     }
 
@@ -54,12 +54,44 @@ public class BeerTycoonTest {
         game.addBeerMaker(beerFactory);
         game.refreshScreen();
         game.refreshScreen();
+        game.notifyObservers();
 
 
         //because the game will refresh the screen after a second
         double expectedBeers = 150;
 
         assertEquals(game.getBeers(), expectedBeers);
+
+    }
+
+    @Test
+    void testPurchasingBeerMaker() {
+        List<BeerMakerType> makers = Arrays.asList(
+                BeerMakerType.MakeBeer,
+                BeerMakerType.BeerDude,
+                BeerMakerType.LiquorStore,
+                BeerMakerType.BeerSilo,
+                BeerMakerType.BeerFactory,
+                BeerMakerType.BeerOcean
+        );
+
+        // Upgrades List
+        List<UpgradeType> upgrades = Arrays.asList(
+                UpgradeType.Efficiency,
+                UpgradeType.CostReduction
+        );
+
+        BeerTycoon game = new BeerTycoon(factory, makers, upgrades);
+        TestObserver observer = new TestObserver();
+        game.attach(observer);
+
+        BeerMaker beerFactory = factory.getBeerMaker(BeerMakerType.BeerFactory);
+        game.addBeerMaker(beerFactory);
+
+        game.notifyObservers();
+
+
+        assertEquals(observer.getPurchasedBeerMakers().size(), 1 );
 
     }
 }
