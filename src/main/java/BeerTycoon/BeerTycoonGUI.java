@@ -20,10 +20,15 @@ public class BeerTycoonGUI {
     private static BeerTycoonGUI guiInstance;
 
     private JFrame frame = new JFrame();
+
     private JLabel beersLabel = new JLabel();
     private JLabel messageLabel = new JLabel();
+
     private JPanel middlePanel = new JPanel();
     private JPanel labelPanel = new JPanel();
+
+    JTextArea textArea = new JTextArea(11, 20);
+
     private List<JButton> beerMakerButtons = new ArrayList<>();
     private List<JButton> upgradeButtons = new ArrayList<>();
 
@@ -34,6 +39,15 @@ public class BeerTycoonGUI {
     private JPanel buttonPanel = new JPanel();
     private JPanel upgradePanel = new JPanel();
     private JPanel messagePanel = new JPanel();
+
+    private BeerTycoonGUI() {}
+
+    public static BeerTycoonGUI getInstance() {
+        if (guiInstance == null) {
+            guiInstance = new BeerTycoonGUI();
+        }
+        return guiInstance;
+    }
 
     public void setGame(BeerTycoon beerTycoon) {
         this.beerTycoon = beerTycoon;
@@ -128,28 +142,35 @@ public class BeerTycoonGUI {
         messageLabel.setText(message);
     }
 
-    private BeerTycoonGUI() {}
-
-    public static BeerTycoonGUI getInstance() {
-        if (guiInstance == null) {
-            guiInstance = new BeerTycoonGUI();
-        }
-        return guiInstance;
-    }
-
     public void showScreen() {
         frame.add(buttonPanel, BorderLayout.SOUTH);
         frame.add(upgradePanel, BorderLayout.EAST);
 
         middlePanel.setLayout(new BoxLayout(middlePanel,BoxLayout.PAGE_AXIS));
         messagePanel.add(messageLabel);
-        setMessage("BEER!");
 
+        updateGameStatisticsMessage();
+
+        middlePanel.add(textArea);
         middlePanel.add(labelPanel);
         middlePanel.add(messagePanel);
         frame.add(middlePanel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+    }
+
+    //TODO: make observer for beer clicks and/or all game counts/data and update GUI accordingly
+    private void updateGameStatisticsMessage() {
+        textArea.setText("BEER!" +
+                "\n Beer Clicks: " + 0 +
+                "\n Beer Dudes: " + 0 +
+                "\n Liquor Stores: " + 0 +
+                "\n Beer Silos: " + 0 +
+                "\n Beer Factories: " + 0 +
+                "\n Beer Oceans: " + 0 +
+                "\n\n Upgrades: " +
+                "\n Efficiency: " + 0 +
+                "\n Cost Reduction: " + 0);
     }
 
 }

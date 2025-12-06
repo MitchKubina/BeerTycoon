@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 public class BeerTycoon {
 
     static final int UPGRADE_COST = 500;
+    static final int MAKE_BEER_DEFAULT_AMOUNT = 100;
 
     final static Logger logger = LoggerFactory.getLogger(BeerTycoon.class);
 
@@ -28,15 +29,16 @@ public class BeerTycoon {
     List<BeerMaker> ownedBeerMakers = new ArrayList<>();
     List<BeerMaker> beerMakerShoppingCatalog = new ArrayList<>();
 
+    //**Example of Dependency Injection**
     public BeerTycoon(BeerMakerFactory factory, List<BeerMakerType> makerButtons, List<UpgradeType> upgradeButtons) {
         this.beerMakerFactory = factory;
         generateBeerMakers(makerButtons);
 
-        setupScreen(upgradeButtons);
+        setUpScreen(upgradeButtons);
         setupTimer();
     }
 
-    void setupScreen(List<UpgradeType> upgradeButtons)  {
+    void setUpScreen(List<UpgradeType> upgradeButtons)  {
         gui = BeerTycoonGUI.getInstance();
         gui.setGame(this);
 
@@ -46,7 +48,7 @@ public class BeerTycoon {
 
     public void handleMakerAction(BeerMakerType type) {
         if (type == BeerMakerType.MakeBeer) {
-            addBeers(1.0);
+            addBeers(MAKE_BEER_DEFAULT_AMOUNT);
         } else {
             addBeerMaker(type);
         }
