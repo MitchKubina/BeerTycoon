@@ -17,6 +17,8 @@ public class BeerTycoon {
 
     static final int UPGRADE_COST = 500;
     static final int MAKE_BEER_DEFAULT_AMOUNT = 100;
+    static final int TIMER_REFRESH_PERIOD = 1000;
+    static final int TIMER_DELAY = 0;
 
     final static Logger logger = LoggerFactory.getLogger(BeerTycoon.class);
 
@@ -29,26 +31,74 @@ public class BeerTycoon {
     List<BeerMaker> ownedBeerMakers = new ArrayList<>();
     List<BeerMaker> beerMakerShoppingCatalog = new ArrayList<>();
 
-    //**Example of Dependency Injection**
+    //**Example of Dependency Injection With Factory**
     public BeerTycoon(BeerMakerFactory factory, List<BeerMakerType> makerButtons, List<UpgradeType> upgradeButtons) {
         this.beerMakerFactory = factory;
-        generateBeerMakers(makerButtons);
-
+        generateBeerMakerButtons(makerButtons);
         setUpScreen(upgradeButtons);
         setupTimer();
     }
 
     void setUpScreen(List<UpgradeType> upgradeButtons)  {
-        gui = BeerTycoonGUI.getInstance();
+        gui = BeerTycoonGUI.getInstance(); //Singleton
         gui.setGame(this);
-
         gui.setButtons(beerMakerShoppingCatalog, upgradeButtons);
         gui.showScreen();
     }
 
+    private void generateBeerMakerButtons(List<BeerMakerType> buttons) {
+        for (BeerMakerType type : buttons) {
+            BeerMaker beerMaker = beerMakerFactory.getBeerMaker(type);
+            beerMakerShoppingCatalog.add(beerMaker);
+        }
+    }
+
+    private void setupTimer() {
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                refreshScreen();
+            }
+        }, TIMER_DELAY, TIMER_REFRESH_PERIOD);
+    }
+
+    //Where the logic will go of calculating beers, updating values, enabling/disabling buttons
+    private void refreshScreen() {
+        addBeerFromBeerMakers();
+
+        String formattedBeers = String.format("Total: %d beers", (int) beers);
+        logger.info(formattedBeers);
+
+        gui.setBeers(beers);
+    }
+
+    private void addBeerFromBeerMakers() {
+        double calculatedBeers = 0;
+        for (BeerMaker beerMaker : ownedBeerMakers) {
+            calculatedBeers += beerMaker.makeBeer();
+        }
+
+        beers += calculatedBeers;
+    }
+
+    void manuallyMakeBeers(double beersToAdd) {
+        this.beers += beersToAdd;
+    }
+
+    void addBeerMaker(BeerMakerType type) {
+        BeerMaker beerMaker = beerMakerFactory.getBeerMaker(type);
+
+        if (beerMaker.getCost() <= beers) {
+            ownedBeerMakers.add(beerMaker);
+            beers -= beerMaker.getCost();
+            gui.setBeers(beers);
+        }
+    }
+
     public void handleMakerAction(BeerMakerType type) {
         if (type == BeerMakerType.MakeBeer) {
-            addBeers(MAKE_BEER_DEFAULT_AMOUNT);
+            manuallyMakeBeers(MAKE_BEER_DEFAULT_AMOUNT);
         } else {
             addBeerMaker(type);
         }
@@ -77,58 +127,6 @@ public class BeerTycoon {
                 }
             }
         }
-    }
-
-    private void generateBeerMakers(List<BeerMakerType> buttons) {
-        for (BeerMakerType type : buttons) {
-            BeerMaker beerMaker = beerMakerFactory.getBeerMaker(type);
-            beerMakerShoppingCatalog.add(beerMaker);
-
-            //beerMakers.add(beerMaker);
-        }
-    }
-
-    private void setupTimer() {
-        Timer t = new Timer();
-        t.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                refreshScreen();
-            }
-        }, 0, 1000);
-    }
-
-    //Where the logic will go of calculating beers, updating values, enabling/disabling buttons
-    private void refreshScreen() {
-        addBeer();
-
-        String formattedBeers = String.format("Total: %d beers", (int) beers);
-        logger.info(formattedBeers);
-
-        gui.setBeers(beers);
-    }
-
-    private void addBeer() {
-        double calculatedBeers = 0;
-        for (BeerMaker beerMaker : ownedBeerMakers) {
-            calculatedBeers += beerMaker.makeBeer();
-        }
-
-        beers += calculatedBeers;
-    }
-
-    void addBeerMaker(BeerMakerType type) {
-        BeerMaker beerMaker = beerMakerFactory.getBeerMaker(type);
-
-        if (beerMaker.getCost() <= beers) {
-            ownedBeerMakers.add(beerMaker);
-            beers -= beerMaker.getCost();
-            gui.setBeers(beers);
-        }
-    }
-
-    void addBeers(double beersToAdd) {
-        this.beers += beersToAdd;
     }
 
     public static void main(String[] args) {
