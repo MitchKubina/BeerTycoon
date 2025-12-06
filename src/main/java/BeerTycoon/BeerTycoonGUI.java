@@ -40,6 +40,15 @@ public class BeerTycoonGUI {
     private JPanel upgradePanel = new JPanel();
     private JPanel messagePanel = new JPanel();
 
+    private BeerTycoonGUI() {}
+
+    public static BeerTycoonGUI getInstance() {
+        if (guiInstance == null) {
+            guiInstance = new BeerTycoonGUI();
+        }
+        return guiInstance;
+    }
+
     public void setGame(BeerTycoon beerTycoon) {
         this.beerTycoon = beerTycoon;
     }
@@ -131,15 +140,6 @@ public class BeerTycoonGUI {
     //sets us up to have some observers
     public void setMessage(String message) {
         messageLabel.setText(message);
-    }
-
-    private BeerTycoonGUI() {}
-
-    public static BeerTycoonGUI getInstance() {
-        if (guiInstance == null) {
-            guiInstance = new BeerTycoonGUI();
-        }
-        return guiInstance;
     }
 
     public void showScreen() {

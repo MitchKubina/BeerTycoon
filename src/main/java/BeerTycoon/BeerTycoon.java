@@ -29,15 +29,16 @@ public class BeerTycoon {
     List<BeerMaker> ownedBeerMakers = new ArrayList<>();
     List<BeerMaker> beerMakerShoppingCatalog = new ArrayList<>();
 
+    //**Example of Dependency Injection**
     public BeerTycoon(BeerMakerFactory factory, List<BeerMakerType> makerButtons, List<UpgradeType> upgradeButtons) {
         this.beerMakerFactory = factory;
         generateBeerMakers(makerButtons);
 
-        setupScreen(upgradeButtons);
+        setUpScreen(upgradeButtons);
         setupTimer();
     }
 
-    void setupScreen(List<UpgradeType> upgradeButtons)  {
+    void setUpScreen(List<UpgradeType> upgradeButtons)  {
         gui = BeerTycoonGUI.getInstance();
         gui.setGame(this);
 
